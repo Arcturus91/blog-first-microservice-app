@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 const posts = {};
 
 app.get("/posts", (req, res) => {
-    res.send(posts);
+  res.send(posts);
 });
 app.post("/events", (req, res) => {
   const { type, data } = req.body;
@@ -17,14 +17,26 @@ app.post("/events", (req, res) => {
   if (type === "PostCreated") {
     const { id, title } = data;
     posts[id] = { id, title, comments: [] };
-  } else if (type === "CommentCreated") {
-    const { id, content, postId } = data;
-    const post = posts[postId];
-    post.comments.push({ id, content });
   }
-console.log('query post', posts)
 
-  res.send({message:'All good'})
+  if (type === "CommentCreated") {
+    const { id, content, postId, status } = data;
+    const post = posts[postId];
+    post.comments.push({ id, content, status });
+  }
+
+  if (type === "CommentUpdated") {
+    const { id, content, postId, status } = data;
+    console.log('comment updated',status)
+    const post = posts[postId];
+    const comment = post.comments.find((comment) => comment.id === id);
+    comment.status = status;
+    comment.content = content; //we add again content because it might be the case that moderation service has modified the content.
+    //we dont need to directly update the content inside the objet because we are updating an object by reference.
+  }
+  console.log("query post", posts);
+
+  res.send({ message: "All good" });
 });
 
 app.listen("4002", () => {

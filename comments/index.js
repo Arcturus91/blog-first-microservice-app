@@ -31,16 +31,45 @@ app.post("/posts/:id/comments", async (req, res) => {
       id: commentId,
       content,
       postId: req.params.id,
+      status: "pending",
     },
+  }).catch((err) => {
+    console.log('comment created error',err.message);
   });
 
   res.status(201).send(comments);
 });
 
-app.post("/events", (req, res) => {
-    console.log("Received event: ", req.body.type);
-    res.send({message:'All good'});
-  })
+app.post("/events", async (req, res) => {
+  console.log("Received event: ", req.body.type);
+
+  const { type, data } = req.body;
+
+  if (type === "CommentModerated") {
+    console.log('comment moderated',req.body)
+    const { postId, id, status, content } = data;
+    const comments = commentsByPostId[postId];
+
+    const comment = comments.find((item) => item.id === id);
+    comment.status = status;
+
+    //you dont need further modification because here you are changing values by reference. comments hold a reference to the commentsByPostId[postId] with the exact postId provided in the call. Then, if you change properties values inside the reference, you are directly changing original object value because all is related.
+
+    await axios.post("http://localhost:4005/events", {
+      type: "CommentUpdated",
+      data: {
+        id,
+        status,
+        postId,
+        content,
+      },
+    }).catch((err) => {
+      console.log('comment update axios post error',err.message);
+    });;
+  }
+
+  res.send({ message: "All good" });
+});
 
 app.listen("4001", () => {
   console.log("Comments server running in port 4001");
