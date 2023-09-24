@@ -9,30 +9,30 @@ const events = [];
 
 app.post("/events", (req, res) => {
   const event = req.body;
-  console.log("am event", event);
+  console.log("am an event received", event);
 
   events.push(event);
 
-  //Posts
+/*   //Comments
   axios.post("http://localhost:4001/events", event).catch((err) => {
     console.log(err.message);
+  }); */
+
+  //POST event to Posts microserv.
+  axios.post("http://posts-clusterip-srv:4000/events", event).catch((err) => {
+    console.log("posts axios post error", err.message);
   });
 
-  //Comments
-  axios.post("http://localhost:4000/events", event).catch((err) => {
-    console.log("comments axios post error", err.message);
-  });
-
-  //Query
+/*   //Query
   axios.post("http://localhost:4002/events", event).catch((err) => {
     console.log("query axios post error", err.message);
-  });
+  }); */
 
-  //Moderation
+/*   //Moderation
   axios.post("http://localhost:4003/events", event).catch((err) => {
     console.log("moderation axios post error", err.message);
   });
-
+ */
   res.send({ status: "ok" });
 });
 
