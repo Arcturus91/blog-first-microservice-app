@@ -13,26 +13,26 @@ app.post("/events", (req, res) => {
 
   events.push(event);
 
-/*   //Comments
-  axios.post("http://localhost:4001/events", event).catch((err) => {
+   //Comments
+  axios.post("http://comments-srv:4001/events", event).catch((err) => {
     console.log(err.message);
-  }); */
+  }); 
 
   //POST event to Posts microserv.
   axios.post("http://posts-clusterip-srv:4000/events", event).catch((err) => {
     console.log("posts axios post error", err.message);
   });
 
-/*   //Query
-  axios.post("http://localhost:4002/events", event).catch((err) => {
+   //Query
+  axios.post("http://query-srv:4002/events", event).catch((err) => {
     console.log("query axios post error", err.message);
-  }); */
+  }); 
 
-/*   //Moderation
-  axios.post("http://localhost:4003/events", event).catch((err) => {
+  //Moderation
+  axios.post("http://moderation-srv:4003/events", event).catch((err) => {
     console.log("moderation axios post error", err.message);
   });
- */
+ 
   res.send({ status: "ok" });
 });
 

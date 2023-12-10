@@ -25,7 +25,7 @@ app.post("/posts/:id/comments", async (req, res) => {
 
   commentsByPostId[req.params.id] = comments;
 
-  await axios.post("http://localhost:4005/events", {
+  await axios.post("http://event-bus-srv:4005/events", {
     type: "CommentCreated",
     data: {
       id: commentId,
@@ -55,7 +55,7 @@ app.post("/events", async (req, res) => {
 
     //you dont need further modification because here you are changing values by reference. comments hold a reference to the commentsByPostId[postId] with the exact postId provided in the call. Then, if you change properties values inside the reference, you are directly changing original object value because all is related.
 
-    await axios.post("http://localhost:4005/events", {
+    await axios.post("http://event-bus-srv:4005/events", {
       type: "CommentUpdated",
       data: {
         id,
